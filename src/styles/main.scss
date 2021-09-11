@@ -1,0 +1,249 @@
+/*
+ * style.scss
+ * Slideshow stylesheet
+ */
+
+/* Main slideshow container */
+.diaporama {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #1e272e;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  overflow: hidden;
+
+  --diapo-width: 1280px;
+  --diapo-height: 720px;
+
+  /* Slides container */
+  .diapos {
+
+    /* Slide(s) container(s) default display */
+    &, .diapo-container {
+      background-color: inherit;
+      position: absolute;
+      inset: 0;
+    }
+
+    /* Slide containers are hidden and behind by default */
+    .diapo-container {
+      visibility: hidden;
+      z-index: 0;
+
+      /* Current slide in the foreground */
+      &.diapo-current {
+        z-index: 2;
+        visibility: visible;
+      }
+
+      /* Center and contain (see auto-scaling in JS) the slide in its container */
+      .diapo {
+        position: absolute;
+        background-color: white;
+        width: var(--diapo-width);
+        height: var(--diapo-height);
+        inset: 50% 0 0 50%;
+        transform: translate(-50%, -50%);
+        overflow: hidden;
+
+        /* Add padding to the slide content */
+        .diapo-content {
+          position: absolute;
+          inset: 0;
+          padding: 2em 4em;
+        }
+
+        /* Hide slide notes */
+        .diapo-notes {
+          display: none;
+        }
+
+        /* Themes */
+        &.dark { background-color: #485460; color: white; }
+
+        /* Alignment classes */
+        &.left   { text-align: left; }
+        &.center { text-align: center; }
+        &.right  { text-align: right; }
+        &.middle > .diapo-content { top: 50%; bottom: auto; transform: translateY(-55%); }
+        &.bottom > .diapo-content { top: auto; bottom: 0; }
+
+        /* Columns layout */
+        .row {
+          display: flex;
+          margin: -1.5rem;
+        }
+        .col {
+          display: block;
+          flex: 1 1 0;
+          padding: 1.5rem;
+        }
+      }
+    }
+  }
+
+  /*
+   * Overview mode
+   */
+
+  &.diaporama-overview .diapos {
+    /* Enable scrollbar */
+    overflow: auto;
+    padding: 24px 0 0 24px;
+
+    /* Display slides in a mosaic layout */
+    .diapo-container {
+      position: relative;
+      width: calc(var(--diapo-width) / 4);
+      height: calc(var(--diapo-height) / 4);
+      display: inline-block;
+      margin: 0 24px 24px 0;
+      user-select: none;
+      visibility: visible;
+
+      /* Outline the current slide */
+      &.diapo-current .diapo {
+        box-shadow: 0 0 0 24px rgba(255, 255, 255, 0.25);
+      }
+    }
+  }
+
+  /*
+   * Presenter mode
+   */
+
+  /* Side notes */
+  .notes {
+    position: absolute;
+    inset: 0 0 0 55%;
+    background-color: white;
+    display: none;
+    padding: 24px;
+
+    /* Notes titles */
+    .notes-current::before, .notes-next::before {
+      display: block;
+      text-transform: uppercase;
+      margin: 16px 0;
+      padding-bottom: 6px;
+      color: gray;
+      border-bottom: solid 1px lightgray;
+    }
+
+    .notes-current::before {
+      content: 'Notes for current slide';
+    }
+
+    .notes-next::before {
+      content: 'Notes for next slide';
+    }
+
+    /* Notes for current slide (bigger) */
+    .notes-current {
+      flex: 3;
+    }
+
+    /* Notes for next slide (smaller) */
+    .notes-next {
+      flex: 2;
+      opacity: 0.6;
+    }
+  }
+
+  &.diaporama-presenter {
+
+    /* Display slides on the left */
+    .diapos {
+      width: calc(55% - 4em);
+      left: 2em;
+
+      /* Display the current slide on the top left */
+      .diapo-container {
+        height: calc(50% - 2em);
+        top: 1.25em;
+
+        /* Outline the current slide */
+        &.diapo-current .diapo {
+          box-shadow: 0 0 0 16px rgba(255, 255, 255, 0.25);
+        }
+      }
+
+      /* Display the next slide on the bottom left */
+      .diapo-container.diapo-current + .diapo-container {
+        top: calc(50% + 0.75em);
+        opacity: 0.6;
+        visibility: visible;
+      }
+    }
+
+    /* Display notes in presentation mode */
+    .notes {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+
+      /* Notes header */
+      .notes-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+
+        /* Top-left slideshow index */
+        .index {
+          background-color: rgba(0, 0, 0, 0.1);
+          border-radius: 4px;
+          padding: 4px 10px;
+          color: black;
+          font-size: large;
+        }
+
+        /* Top-right slideshow timer */
+        .timer {
+          background-color: rgba(0, 0, 0, 0.75);
+          border-radius: 4px;
+          padding: 4px 10px;
+          color: white;
+          font-size: x-large;
+        }
+      }
+    }
+  }
+
+  /*
+   * Black screen
+   */
+
+  /* Add a black mask in the foreground */
+  &.diaporama-black::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-color: black;
+    z-index: 10;
+  }
+}
+
+/*
+ * Print
+ */
+
+/* Stack all slides vertically for printing */
+@media print {
+  .diaporama {
+    background-color: transparent;
+    overflow: auto;
+
+    .diapo-container {
+      position: relative;
+      width: var(--diapo-width);
+      height: var(--diapo-height);
+      break-after: page;
+
+      .diapo {
+        inset: 0 !important;
+        transform: none !important;
+      }
+    }
+  }
+}
