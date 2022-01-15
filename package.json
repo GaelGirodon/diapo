@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/GaelGirodon/diapo#readme",
   "devDependencies": {
-    "sass": "^1.43.3",
-    "uglify-js": "^3.14.2"
+    "sass": "^1.48.0",
+    "uglify-js": "^3.14.5"
   }
 }
