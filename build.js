@@ -4,8 +4,8 @@
  */
 
 const fs = require("fs");
-const path = require("path");
-const {minify} = require("uglify-js");
+const { join } = require("path");
+const { minify } = require("uglify-js");
 const sass = require("sass");
 
 /** Source files */
@@ -14,30 +14,35 @@ const src = {
   scripts: ["src/scripts/main.js"]
 };
 
-/** Output files prefix */
-let dist = "dist/diapo";
+/** Output files */
+const dist = {
+  /** Output directory path */
+  dir: join(__dirname, "dist"),
+  /** Output files name */
+  file: "diapo"
+};
 
 /**
  * JS minification options
  */
-const minifyOpts = {compress: {varify: false}, mangle: false};
+const minifyOpts = { compress: { varify: false }, mangle: false };
 
 /**
  * Build styles and scripts.
  */
 function build() {
   process.stderr.write("Building...");
+  fs.mkdirSync(dist.dir, { recursive: true });
   // Styles
-  const style = sass.renderSync({
-    file: path.join(__dirname, src.styles),
-    outputStyle: "compressed"
+  const style = sass.compile(join(__dirname, src.styles), {
+    style: "compressed"
   }).css.toString("utf8").trim();
-  fs.writeFileSync(path.join(__dirname, `${dist}.min.css`), style);
+  fs.writeFileSync(join(dist.dir, `${dist.file}.min.css`), style);
   // Scripts
   let script = src.scripts
-    .map(s => fs.readFileSync(path.join(__dirname, s), "utf8"))
+    .map(s => fs.readFileSync(join(__dirname, s), "utf8"))
     .reduce((acc, val) => `${acc}\n${val}`);
-  fs.writeFileSync(path.join(__dirname, `${dist}.min.js`), minify(script, minifyOpts).code);
+  fs.writeFileSync(join(dist.dir, `${dist.file}.min.js`), minify(script, minifyOpts).code);
   process.stderr.write(`\rBuilding... Done\n`);
 }
 

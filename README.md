@@ -20,7 +20,7 @@ presentation tool powered by web technologies, featuring:
 - Initialize the slideshow:
 
 ```js
-const diapo = new Diapo()
+const diapo = new Diapo();
 ```
 
 ### Controls
@@ -34,7 +34,7 @@ const diapo = new Diapo()
 | <kbd>O</kbd>                                                  | Toggle the overview mode                   |
 | <kbd>P</kbd>                                                  | Toggle the presentation mode               |
 | <kbd>C</kbd>                                                  | Open the clone view (in presentation mode) |
-| <kbd>Esc</kbd>                                                | Return to the default mode                 |
+| <kbd>Esc</kbd> <kbd>Enter</kbd>                               | Return to the default mode                 |
 | <kbd>B</kbd>                                                  | Toggle the black screen (in default mode)  |
 | <kbd>T</kbd>                                                  | Reset the timer                            |
 

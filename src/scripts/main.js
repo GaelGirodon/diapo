@@ -1,9 +1,9 @@
 /*
- * script.js
+ * main.js
  */
 
 /**
- * A presentation framework using web technologies.
+ * A presentation framework using web technologies
  */
 class Diapo {
 
@@ -33,6 +33,9 @@ class Diapo {
       // Handle mouse wheel event
       document.addEventListener("wheel", (e) =>
         this.navigate(this._current + (e.deltaY > 0 ? 1 : -1)));
+      // Handle mouse click event
+      this._slidesContainer.querySelectorAll(":scope > .diapo-container > .diapo")
+        .forEach((el, i) => el.addEventListener("click", () => this._handleClick(i)));
     }
     // Resize slides on window resize
     window.addEventListener("resize", () => this._rescale());
@@ -57,7 +60,7 @@ class Diapo {
     this._slidesContainer.querySelectorAll(":scope > .diapo").forEach((s) => {
       const sc = document.createElement("div");
       sc.classList.add("diapo-container");
-      const notes = s.querySelector(":scope > .notes") || {outerHTML: ""};
+      const notes = s.querySelector(":scope > .notes") || { outerHTML: "" };
       if (notes?.outerHTML) {
         s.removeChild(notes);
         notes.classList.replace("notes", "diapo-notes");
@@ -99,7 +102,7 @@ class Diapo {
       return;
     }
     // Navigate to the target slide
-    this._raise("navigationStart", {index, element: this._slides[index]});
+    this._raise("navigationStart", { index, element: this._slides[index] });
     this._slides[this._current].classList.remove("diapo-current");
     this._slides[index].classList.add("diapo-current");
     this._current = index;
@@ -121,7 +124,7 @@ class Diapo {
     }
     // Rescale slides
     this._rescale();
-    this._raise("navigationEnd", {index, element: this._slides[index]});
+    this._raise("navigationEnd", { index, element: this._slides[index] });
   }
 
   /**
@@ -149,7 +152,7 @@ class Diapo {
     this._mode = mode;
     this._updateTimer();
     this._rescale();
-    this._raise("modeToggle", {mode});
+    this._raise("modeToggle", { mode });
   }
 
   /**
@@ -193,7 +196,7 @@ class Diapo {
       search.set("clone", "1");
       const url = location.origin + location.pathname + "?" + search.toString() + location.hash;
       this._clone = window.open(url, "_blank", "menubar=no");
-      this._raise("cloneOpen", {window: this._clone});
+      this._raise("cloneOpen", { window: this._clone });
     } else {
       this._clone.focus();
     }
@@ -208,26 +211,41 @@ class Diapo {
   _handleKeyDown(e) {
     if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
 
-    if (e.code === "ArrowRight" || e.code === "ArrowDown" || e.code === "PageDown" || e.code === "Space") { // Navigate to the next slide
-      this.navigate("next");
-    } else if (e.code === "ArrowLeft" || e.code === "ArrowUp" || e.code === "PageUp") { // Navigate to the previous slide
-      this.navigate("prev");
-    } else if (e.code === "Home") { // Navigate to the first slide
-      this.navigate("first");
-    } else if (e.code === "End") { // Navigate to the last slide
-      this.navigate("last");
-    } else if (e.code === "KeyO") { // Toggle the overview mode
-      this.toggleMode("overview");
-    } else if (e.code === "KeyP") { // Toggle the presentation mode
-      this.toggleMode("presenter");
-    } else if (e.code === "Escape") { // Toggle the default show mode
-      this.toggleMode("show");
-    } else if (e.code === "KeyB") { // Toggle the black screen
-      this.toggleBlackScreen();
-    } else if (e.code === "KeyC" && this._mode === "presenter") { // Open the clone view
-      this.openClone();
-    } else if (e.code === "KeyT") { // Reset the timer
-      this._updateTimer(true);
+    if (["ArrowRight", "ArrowDown", "PageDown", "Space"].includes(e.code)) {
+      this.navigate("next");        // Navigate to the next slide
+    } else if (["ArrowLeft", "ArrowUp", "PageUp"].includes(e.code)) {
+      this.navigate("prev");        // Navigate to the previous slide
+    } else if (e.code === "Home") {
+      this.navigate("first");       // Navigate to the first slide
+    } else if (e.code === "End") {
+      this.navigate("last");        // Navigate to the last slide
+    } else if (e.code === "KeyO") {
+      this.toggleMode("overview");  // Toggle the overview mode
+    } else if (e.code === "KeyP") {
+      this.toggleMode("presenter"); // Toggle the presentation mode
+    } else if (e.code === "Escape" || e.code === "Enter") {
+      this.toggleMode("show");      // Toggle the default show mode
+    } else if (e.code === "KeyB") {
+      this.toggleBlackScreen();     // Toggle the black screen
+    } else if (e.code === "KeyC" && this._mode === "presenter") {
+      this.openClone();             // Open the clone view
+    } else if (e.code === "KeyT") {
+      this._updateTimer(true);      // Reset the timer
+    }
+  }
+
+  /**
+   * Handle mouse click event on slides: in overview and presenter modes,
+   * navigate to the slide and, in overview mode, return to the default mode.
+   * @param {number} i Slide index
+   * @private
+   */
+  _handleClick(i) {
+    if (this._mode === "overview" || this._mode === "presenter") {
+      this.navigate(i);
+      if (this._mode === "overview") {
+        this.toggleMode("show");
+      }
     }
   }
 

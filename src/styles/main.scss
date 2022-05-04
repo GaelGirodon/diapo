@@ -1,5 +1,5 @@
 /*
- * style.scss
+ * main.scss
  * Slideshow stylesheet
  */
 
@@ -70,15 +70,8 @@
         &.bottom > .diapo-content { top: auto; bottom: 0; }
 
         /* Columns layout */
-        .row {
-          display: flex;
-          margin: -1.5rem;
-        }
-        .col {
-          display: block;
-          flex: 1 1 0;
-          padding: 1.5rem;
-        }
+        .row { display: flex; margin: -1.5rem; }
+        .col { display: block; flex: 1 1 0; padding: 1.5rem; }
       }
     }
   }
@@ -106,6 +99,12 @@
       &.diapo-current .diapo {
         box-shadow: 0 0 0 24px rgba(255, 255, 255, 0.25);
       }
+
+      /* Outline the slide on hover */
+      &:not(.diapo-current) .diapo:hover {
+        box-shadow: 0 0 0 24px rgba(255, 255, 255, 0.15);
+        cursor: pointer;
+      }
     }
   }
 
@@ -122,7 +121,8 @@
     padding: 24px;
 
     /* Notes titles */
-    .notes-current::before, .notes-next::before {
+    .notes-current::before,
+    .notes-next::before {
       display: block;
       text-transform: uppercase;
       margin: 16px 0;
@@ -166,6 +166,12 @@
         /* Outline the current slide */
         &.diapo-current .diapo {
           box-shadow: 0 0 0 16px rgba(255, 255, 255, 0.25);
+        }
+
+        /* Outline the slide on hover */
+        &:not(.diapo-current) .diapo:hover {
+          box-shadow: 0 0 0 16px rgba(255, 255, 255, 0.15);
+          cursor: pointer;
         }
       }
 
