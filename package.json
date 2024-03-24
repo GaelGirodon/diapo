@@ -2,6 +2,7 @@
   "name": "diapo",
   "version": "0.1.0",
   "description": "A simple, lightweight and modern presentation tool powered by web technologies",
+  "type": "module",
   "scripts": {
     "build": "node build.js"
   },
@@ -22,7 +23,7 @@
   },
   "homepage": "https://github.com/GaelGirodon/diapo#readme",
   "devDependencies": {
-    "sass": "^1.51.0",
-    "uglify-js": "^3.15.4"
+    "sass": "^1.72.0",
+    "terser": "^5.29.2"
   }
 }

@@ -3,47 +3,43 @@
  * Scripts and styles compilation
  */
 
-const fs = require("fs");
-const { join } = require("path");
-const { minify } = require("uglify-js");
-const sass = require("sass");
+import fs from "node:fs";
+import { join } from "node:path";
+import * as sass from "sass";
+import * as terser from "terser";
 
 /** Source files */
 const src = {
-  styles: "src/styles/main.scss",
-  scripts: ["src/scripts/main.js"]
+  styles: join(import.meta.dirname, "src/styles/main.scss"),
+  scripts: [
+    join(import.meta.dirname, "src/scripts/main.js")
+  ]
 };
 
 /** Output files */
 const dist = {
   /** Output directory path */
-  dir: join(__dirname, "dist"),
+  dir: join(import.meta.dirname, "dist"),
   /** Output files name */
   file: "diapo"
 };
 
-/**
- * JS minification options
+/*
+ * Build styles and scripts
  */
-const minifyOpts = { compress: { varify: false }, mangle: false };
 
-/**
- * Build styles and scripts.
- */
-function build() {
-  process.stderr.write("Building...");
-  fs.mkdirSync(dist.dir, { recursive: true });
-  // Styles
-  const style = sass.compile(join(__dirname, src.styles), {
-    style: "compressed"
-  }).css.toString("utf8").trim();
-  fs.writeFileSync(join(dist.dir, `${dist.file}.min.css`), style);
-  // Scripts
-  let script = src.scripts
-    .map(s => fs.readFileSync(join(__dirname, s), "utf8"))
-    .reduce((acc, val) => `${acc}\n${val}`);
-  fs.writeFileSync(join(dist.dir, `${dist.file}.min.js`), minify(script, minifyOpts).code);
-  process.stderr.write(`\rBuilding... Done\n`);
-}
+process.stderr.write("Building...");
+fs.mkdirSync(dist.dir, { recursive: true });
 
-build();
+// Styles
+const style = sass.compile(src.styles, { style: "compressed" }).css.trim();
+fs.writeFileSync(join(dist.dir, `${dist.file}.min.css`), style, "utf8");
+
+// Scripts
+let script = src.scripts
+  .map(s => fs.readFileSync(s, "utf8"))
+  .reduce((acc, val) => `${acc}\n${val}`);
+script = (await terser.minify(script, { mangle: false })).code;
+fs.writeFileSync(join(dist.dir, `${dist.file}.min.js`), script, "utf8");
+
+process.stderr.write(`\rBuilding... Done\n`);
